@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/sitemap.xml
