@@ -1,3 +1,4 @@
+<!-- Developed and maintained by Abhishek Kumar T -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
     <meta name="keywords" content="Aspiring Data Analyst, Python, SQL, Power BI, Portfolio, Keerthana R, Data Visualization, Pandas, Excel">
     <meta name="author" content="Keerthana R">
     <meta name="theme-color" content="#ec4899">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-src 'none'; base-uri 'self'; object-src 'none'; form-action 'self';">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/">
@@ -16,23 +17,25 @@
     <meta property="og:image" content="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/preview.webp">
     <meta property="og:image:width" content="1250">
     <meta property="og:image:height" content="752">
-    <meta property="og:image:alt" content="Chocolate Sales Power BI Dashboard Preview">
+    <meta property="og:image:alt" content="Keerthana R - Aspiring Data Analyst Portfolio Preview">
 
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/">
     <meta property="twitter:title" content="Keerthana R | Aspiring Data Analyst Portfolio">
     <meta property="twitter:description" content="Transforming data into actionable insights. View my skills, projects, certifications, and experience.">
     <meta property="twitter:image" content="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/preview.webp">
-    <meta property="twitter:image:alt" content="Chocolate Sales Power BI Dashboard Preview">
+    <meta property="twitter:image:alt" content="Keerthana R - Aspiring Data Analyst Portfolio Preview">
 
     <title>Keerthana R | Aspiring Data Analyst | Python, SQL & Power BI Portfolio</title>
+    <link rel="alternate" hreflang="en" href="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/">
+    <link rel="alternate" hreflang="x-default" href="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23ec4899'/><path d='M25 70 L25 35 L40 50 L55 30 L70 55 L75 25' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <link rel="canonical" href="https://keerthanaraghu22.github.io/Keerthana-R-Portfolio/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="profile.webp" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     </noscript>
@@ -59,18 +62,23 @@
             .cert-carousel-track,
             .skills-carousel-track {
                 animation: none !important;
-            }
-            .cert-carousel,
-            .skills-carousel {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-            }
-            .cert-carousel-track,
-            .skills-carousel-track {
                 display: grid !important;
                 grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)) !important;
                 gap: clamp(1rem, 2vw, 1.5rem) !important;
-                animation: none !important;
+                width: 100% !important;
+            }
+            .cert-carousel,
+            .skills-carousel {
+                -webkit-mask-image: none !important;
+                mask-image: none !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            .cert-carousel .cert-card,
+            .skills-carousel .skill-card {
+                flex: unset !important;
+                width: auto !important;
+                min-width: unset !important;
             }
         </style>
     </noscript>
@@ -95,7 +103,6 @@
 
     <div class="particles" id="particles" aria-hidden="true"></div>
 
-    <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="container">
             <a href="#home" class="logo">Keerthana R</a>
@@ -283,7 +290,6 @@
                         <span class="cert-year">2026</span>
                         <span class="cert-link"><i class="fab fa-linkedin"></i> View on LinkedIn</span>
                     </a>
-                    <!-- Duplicated set will be injected by JS for seamless infinite loop -->
                 </div>
             </div>
         </div>
@@ -498,7 +504,7 @@
                     <a href="https://github.com/Keerthanaraghu22" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 </div>
             </div>
-    <p>&copy; <span id="footer-year">2025</span> Keerthana R. All rights reserved.</p>
+    <p>&copy; <span id="footer-year">2026</span> Keerthana R. All rights reserved.</p>
             <p>Aspiring Data Analyst | Python | SQL | Power BI</p>
         </div>
     </footer>

@@ -257,10 +257,8 @@ if (backToTop) {
     var track = document.getElementById('certCarouselTrack');
     if (!track) return;
 
-    // Skip if prefers-reduced-motion (CSS handles fallback)
     if (prefersReducedMotion) return;
 
-    // Duplicate all original cert cards for seamless infinite loop
     var originalCards = Array.from(track.querySelectorAll('.cert-card'));
     if (originalCards.length === 0) return;
 
@@ -271,7 +269,6 @@ if (backToTop) {
         track.appendChild(clone);
     });
 
-    // ---- Pause on hover (desktop) ----
     track.addEventListener('mouseenter', function() {
         track.classList.add('carousel-paused');
     });
@@ -280,7 +277,6 @@ if (backToTop) {
         track.classList.remove('carousel-paused');
     });
 
-    // ---- Pause on touch (mobile) ----
     var touchStartX = 0;
     var touchStartY = 0;
     var touchMoved = false;
@@ -308,7 +304,6 @@ if (backToTop) {
     track.addEventListener('touchend', function() {
         clearTimeout(touchHoldTimer);
         clearTimeout(resumeTimer);
-        // Resume quickly (300ms) — matches desktop mouse-leave feel
         resumeTimer = setTimeout(function() {
             track.classList.remove('carousel-paused');
         }, 300);
@@ -320,10 +315,8 @@ if (backToTop) {
         track.classList.remove('carousel-paused');
     }, { passive: true });
 
-    // ---- Prevent link-click conflicts during scroll/drag ----
     var isClickDisabled = false;
 
-    // On touch: only follow link if no significant movement occurred
     track.addEventListener('touchstart', function() {
         isClickDisabled = false;
     }, { passive: true });
@@ -332,7 +325,6 @@ if (backToTop) {
         isClickDisabled = true;
     }, { passive: true });
 
-    // Use event delegation for cert-card clicks
     track.addEventListener('click', function(e) {
         if (isClickDisabled) {
             e.preventDefault();
@@ -344,14 +336,11 @@ if (backToTop) {
         var certCard = e.target.closest('.cert-card');
         if (!certCard) return;
 
-        // Prevent accidental clicks during animation pause transitions
         if (track.classList.contains('carousel-paused')) {
-            // Allow the click but mark we just interacted
             return;
         }
     }, true);
 
-    // Prevent cloned (aria-hidden) cards from being focusable or clickable
     track.querySelectorAll('.cert-card-clone').forEach(function(clone) {
         clone.setAttribute('tabindex', '-1');
         clone.addEventListener('click', function(e) {
@@ -359,17 +348,14 @@ if (backToTop) {
             e.stopPropagation();
         }, true);
 
-        // Prevent keyboard focus on cloned cards
         var focusable = clone.querySelectorAll('a, button, [tabindex]');
         focusable.forEach(function(el) {
             el.setAttribute('tabindex', '-1');
         });
     });
 
-    // ---- Dynamic speed adjustment based on content width ----
     var originalSetWidth = 0;
     function recalcSpeed() {
-        // Measure the width of the first set of cards
         var cards = track.querySelectorAll('.cert-card:not(.cert-card-clone)');
         var totalWidth = 0;
         var gap = parseFloat(getComputedStyle(track).gap) || 0;
@@ -380,13 +366,11 @@ if (backToTop) {
         originalSetWidth = totalWidth;
 
         if (originalSetWidth > 0) {
-            // Base speed: ~40px per second, adjust duration proportionally
             var duration = Math.max(15, originalSetWidth / 40);
             track.style.animationDuration = duration + 's';
         }
     }
 
-    // Calculate after layout is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(recalcSpeed, 100);
@@ -395,14 +379,12 @@ if (backToTop) {
         setTimeout(recalcSpeed, 100);
     }
 
-    // Recalculate on resize
     var resizeTimer = null;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(recalcSpeed, 200);
     }, { passive: true });
 
-    // ---- Pause animation when section is not visible (performance) ----
     var certSection = document.getElementById('certifications');
     if (certSection && 'IntersectionObserver' in window) {
         var carouselObserver = new IntersectionObserver(function(entries) {
@@ -773,7 +755,6 @@ if (!isMobile) {
     });
 }
 
-// Touch feedback for interactive elements (excluding cert-cards now handled by carousel)
 const touchElements = document.querySelectorAll('.education-card, .experience-card, .project-card, .strength-card, .stat, .contact-item, .skill-card, .strength-item, .skill-tag, .language-item');
 
 touchElements.forEach(el => {
@@ -813,7 +794,6 @@ touchElements.forEach(el => {
         }
     }, { passive: true });
 
-    // Handle blur - remove touched class when focus leaves (helps with back navigation on mobile)
     el.addEventListener('blur', function() {
         this.classList.remove('touched');
     }, { passive: true });
@@ -849,7 +829,6 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 
-// Also handle pageshow (for back-forward cache on mobile)
 window.addEventListener('pageshow', function(e) {
     if (e.persisted) {
         document.querySelectorAll('.touched').forEach(el => {
@@ -889,7 +868,6 @@ const counterObserver = new IntersectionObserver((entries) => {
             const hasPlus = text.includes('+');
             const number = parseInt(text.replace(/[^0-9]/g, ''));
 
-            // Skip animation for year values (exact 4-digit years without '+')
             if (/^\d{4}$/.test(text.trim()) && !hasPlus) {
                 target.textContent = text;
                 counterObserver.unobserve(target);
@@ -942,7 +920,7 @@ window.addEventListener('load', () => {
     // Resume.pdf, simply update the VERSION string below and re-deploy.
     // The timestamp ensures every device fetches the fresh file.
     (function() {
-        var resumeVersion = 'v1'; // <-- UPDATE THIS when Resume.pdf changes
+        var resumeVersion = 'v1';
         var resumeLinks = document.querySelectorAll('a[href="Resume.pdf"]');
         for (var i = 0; i < resumeLinks.length; i++) {
             var link = resumeLinks[i];
@@ -963,7 +941,6 @@ window.addEventListener('load', () => {
         email = atob(encodedEmail);
     } catch (e) {
         console.error('Email decoding failed:', e);
-        // Fallback to a generic email or suppress
         email = '';
     }
 
@@ -972,7 +949,6 @@ window.addEventListener('load', () => {
         (function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Redirect directly without setting href — prevents status bar from showing mailto:
                 window.open('mailto:' + email, '_blank');
             });
         })(emailLinks[i]);

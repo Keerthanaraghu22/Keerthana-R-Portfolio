@@ -609,7 +609,6 @@ section {
     box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .btn-primary:hover {
         transform: translateY(-3px);
@@ -699,7 +698,6 @@ section {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .stat:hover {
         transform: translateY(-5px);
@@ -795,7 +793,6 @@ section {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .education-card:hover {
         transform: translateX(10px);
@@ -916,7 +913,6 @@ section {
     transition: transform 0.3s ease;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .cert-card:hover {
         transform: translateY(-5px);
@@ -1127,7 +1123,6 @@ section {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Only apply hover effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .strength-item:hover {
         background: rgba(236, 72, 153, 0.15);
@@ -1152,7 +1147,6 @@ section {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Only apply hover effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .skill-tag:hover {
         background: var(--primary);
@@ -1179,7 +1173,6 @@ section {
     gap: var(--space-md);
 }
 
-/* Only apply hover effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .language-item:hover {
         background: rgba(236, 72, 153, 0.15);
@@ -1229,7 +1222,6 @@ section {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .project-card:hover {
         transform: translateY(-10px);
@@ -1257,7 +1249,6 @@ section {
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Only apply hover effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .project-card:hover .project-icon {
         opacity: 0;
@@ -1428,7 +1419,6 @@ section {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .experience-card:hover {
         transform: translateX(10px);
@@ -1559,7 +1549,6 @@ section {
     transition: transform 0.3s ease;
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .skill-card:hover {
         transform: translateY(-5px);
@@ -1647,7 +1636,6 @@ section {
     box-shadow: 0 8px 30px rgba(236, 72, 153, 0.12);
 }
 
-/* Only apply hover and active effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .contact-item:hover {
         background: white;
@@ -1823,7 +1811,6 @@ section {
     transition: all 0.3s ease;
 }
 
-/* Only apply hover effects on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .footer-social a:hover {
         background: white;
@@ -2012,7 +1999,6 @@ a:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    /* Mobile: carousel cards fill width */
     .cert-carousel .cert-card {
         width: clamp(260px, 80vw, 320px);
         min-width: 260px;
@@ -2354,9 +2340,6 @@ a:focus-visible {
         transform: scale(0.98);
     }
 
-    /* Disabled: :active styles cause stuck state on touch devices */
-    /* Touch interactions are handled via JavaScript .touched class */
-
     .nav-links a {
         min-height: 44px;
         display: flex;
@@ -2453,45 +2436,39 @@ a:focus-visible {
     transform: translateY(0);
 }
 
-@media (scripting: none) {
-    .animate-on-scroll {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .cert-carousel-track,
-    .skills-carousel-track {
-        animation: none !important;
-    }
-
-    .cert-carousel,
-    .skills-carousel {
-        -webkit-mask-image: none;
-        mask-image: none;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .cert-carousel-track,
-    .skills-carousel-track {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)) !important;
-        gap: clamp(1rem, 2vw, 1.5rem) !important;
-        width: 100% !important;
-    }
-
-    .cert-carousel .cert-card,
-    .skills-carousel .skill-card {
-        flex: unset !important;
-        width: auto !important;
-        min-width: unset !important;
-    }
-}
-
+/* No-JS fallback: works in ALL browsers including Safari.
+   When JS runs, script.js adds class "js-loaded" to <html>,
+   which disables these rules. When JS is disabled, the class
+   is never added so fallback styles apply. This replaces the
+   old @media (scripting: none) which Safari does not support. */
 .no-js .animate-on-scroll,
 html:not(.js-loaded) .animate-on-scroll {
     opacity: 1;
     transform: translateY(0);
+}
+
+html:not(.js-loaded) .cert-carousel-track,
+html:not(.js-loaded) .skills-carousel-track {
+    animation: none !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)) !important;
+    gap: clamp(1rem, 2vw, 1.5rem) !important;
+    width: 100% !important;
+}
+
+html:not(.js-loaded) .cert-carousel,
+html:not(.js-loaded) .skills-carousel {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+html:not(.js-loaded) .cert-carousel .cert-card,
+html:not(.js-loaded) .skills-carousel .skill-card {
+    flex: unset !important;
+    width: auto !important;
+    min-width: unset !important;
 }
 
 @keyframes ripple {
