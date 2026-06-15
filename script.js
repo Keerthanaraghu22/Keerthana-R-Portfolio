@@ -250,37 +250,47 @@ if (backToTop) {
 }
 
 // ========================================
-// CERTIFICATIONS CAROUSEL
+// REUSABLE CAROUSEL FACTORY
 // ========================================
 
-(function initCertCarousel() {
-    var track = document.getElementById('certCarouselTrack');
+/**
+ * Initializes an infinite-scroll carousel.
+ *
+ * @param {Object} config
+ * @param {string} config.trackId         - ID of the carousel track element
+ * @param {string} config.cardSelector    - CSS selector for original cards within the track
+ * @param {string} config.cloneClass      - Class name added to cloned cards
+ * @param {string} config.sectionId      - ID of the parent section for IntersectionObserver
+ * @param {number} config.minDuration     - Minimum animation duration in seconds
+ */
+function initCarousel(config) {
+    var track = document.getElementById(config.trackId);
     if (!track) return;
-
     if (prefersReducedMotion) return;
 
-    var originalCards = Array.from(track.querySelectorAll('.cert-card'));
+    var originalCards = Array.from(track.querySelectorAll(config.cardSelector));
     if (originalCards.length === 0) return;
 
+    // Clone cards for infinite scroll
     originalCards.forEach(function(card) {
         var clone = card.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
-        clone.classList.add('cert-card-clone');
+        clone.classList.add(config.cloneClass);
         track.appendChild(clone);
     });
 
+    // Mouse hover pause
     track.addEventListener('mouseenter', function() {
         track.classList.add('carousel-paused');
     });
-
     track.addEventListener('mouseleave', function() {
         track.classList.remove('carousel-paused');
     });
 
+    // Touch pause/resume
     var touchStartX = 0;
     var touchStartY = 0;
     var touchMoved = false;
-    var touchHoldTimer = null;
     var resumeTimer = null;
 
     track.addEventListener('touchstart', function(e) {
@@ -288,8 +298,6 @@ if (backToTop) {
         touchStartY = e.touches[0].clientY;
         touchMoved = false;
         track.classList.add('carousel-paused');
-
-        clearTimeout(touchHoldTimer);
         clearTimeout(resumeTimer);
     }, { passive: true });
 
@@ -302,7 +310,6 @@ if (backToTop) {
     }, { passive: true });
 
     track.addEventListener('touchend', function() {
-        clearTimeout(touchHoldTimer);
         clearTimeout(resumeTimer);
         resumeTimer = setTimeout(function() {
             track.classList.remove('carousel-paused');
@@ -310,11 +317,11 @@ if (backToTop) {
     }, { passive: true });
 
     track.addEventListener('touchcancel', function() {
-        clearTimeout(touchHoldTimer);
         clearTimeout(resumeTimer);
         track.classList.remove('carousel-paused');
     }, { passive: true });
 
+    // Click-vs-swipe prevention
     var isClickDisabled = false;
 
     track.addEventListener('touchstart', function() {
@@ -333,15 +340,16 @@ if (backToTop) {
             return;
         }
 
-        var certCard = e.target.closest('.cert-card');
-        if (!certCard) return;
+        var card = e.target.closest(config.cardSelector);
+        if (!card) return;
 
         if (track.classList.contains('carousel-paused')) {
             return;
         }
     }, true);
 
-    track.querySelectorAll('.cert-card-clone').forEach(function(clone) {
+    // Clone accessibility - prevent tab focus and clicks on cloned cards
+    track.querySelectorAll('.' + config.cloneClass).forEach(function(clone) {
         clone.setAttribute('tabindex', '-1');
         clone.addEventListener('click', function(e) {
             e.preventDefault();
@@ -354,19 +362,18 @@ if (backToTop) {
         });
     });
 
-    var originalSetWidth = 0;
+    // Dynamic speed calculation based on content width
     function recalcSpeed() {
-        var cards = track.querySelectorAll('.cert-card:not(.cert-card-clone)');
+        var cards = track.querySelectorAll(config.cardSelector + ':not(.' + config.cloneClass + ')');
         var totalWidth = 0;
         var gap = parseFloat(getComputedStyle(track).gap) || 0;
         cards.forEach(function(card, i) {
             totalWidth += card.offsetWidth;
             if (i > 0) totalWidth += gap;
         });
-        originalSetWidth = totalWidth;
 
-        if (originalSetWidth > 0) {
-            var duration = Math.max(15, originalSetWidth / 40);
+        if (totalWidth > 0) {
+            var duration = Math.max(config.minDuration, totalWidth / 40);
             track.style.animationDuration = duration + 's';
         }
     }
@@ -379,14 +386,16 @@ if (backToTop) {
         setTimeout(recalcSpeed, 100);
     }
 
+    // Debounced resize recalculation
     var resizeTimer = null;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(recalcSpeed, 200);
     }, { passive: true });
 
-    var certSection = document.getElementById('certifications');
-    if (certSection && 'IntersectionObserver' in window) {
+    // Pause animation when section is off-screen
+    var section = document.getElementById(config.sectionId);
+    if (section && 'IntersectionObserver' in window) {
         var carouselObserver = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (!entry.isIntersecting) {
@@ -397,117 +406,115 @@ if (backToTop) {
             });
         }, { threshold: 0.1 });
 
-        carouselObserver.observe(certSection);
+        carouselObserver.observe(section);
     }
-})();
+}
 
 // ========================================
-// TECHNICAL SKILLS CAROUSEL (same logic as certifications)
+// CAROUSEL INITIALIZATION
 // ========================================
 
-(function initSkillsCarousel() {
-    var track = document.getElementById('skillsCarouselTrack');
-    if (!track) return;
-    if (prefersReducedMotion) return;
+initCarousel({
+    trackId: 'certCarouselTrack',
+    cardSelector: '.cert-card',
+    cloneClass: 'cert-card-clone',
+    sectionId: 'certifications',
+    minDuration: 15
+});
 
-    var originalCards = Array.from(track.querySelectorAll('.skill-card'));
-    if (originalCards.length === 0) return;
+initCarousel({
+    trackId: 'skillsCarouselTrack',
+    cardSelector: '.skill-card',
+    cloneClass: 'skill-card-clone',
+    sectionId: 'technical-skills',
+    minDuration: 12
+});
 
-    originalCards.forEach(function(card) {
-        var clone = card.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        clone.classList.add('skill-card-clone');
-        track.appendChild(clone);
-    });
+// ========================================
+// MOBILE PROJECTS CAROUSEL AUTO-SCROLL
+// ========================================
+(function() {
+    var projectsCarousel = document.querySelector('.projects-carousel');
+    var projectsTrack = document.getElementById('projectsCarouselTrack');
+    if (!projectsCarousel || !projectsTrack || prefersReducedMotion) return;
 
-    track.addEventListener('mouseenter', function() {
-        track.classList.add('carousel-paused');
-    });
-    track.addEventListener('mouseleave', function() {
-        track.classList.remove('carousel-paused');
-    });
+    var scrollInterval = null;
+    var isPaused = false;
 
-    var touchStartX = 0, touchStartY = 0, touchMoved = false;
-    var resumeTimer = null;
+    function startAutoScroll() {
+        if (!isMobile || isPaused) return;
+        stopAutoScroll();
+        scrollInterval = setInterval(function() {
+            var cardWidth = projectsCarousel.querySelector('.project-card');
+            if (!cardWidth) return;
+            var scrollAmount = cardWidth.offsetWidth + parseFloat(getComputedStyle(projectsTrack).gap) || 16;
+            var maxScroll = projectsTrack.scrollWidth - projectsCarousel.clientWidth;
 
-    track.addEventListener('touchstart', function(e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        touchMoved = false;
-        track.classList.add('carousel-paused');
-        clearTimeout(resumeTimer);
-    }, { passive: true });
+            if (projectsCarousel.scrollLeft >= maxScroll - 5) {
+                projectsCarousel.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                projectsCarousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }, 2000);
+    }
 
-    track.addEventListener('touchmove', function(e) {
-        var dx = Math.abs(e.touches[0].clientX - touchStartX);
-        var dy = Math.abs(e.touches[0].clientY - touchStartY);
-        if (dx > 10 || dy > 10) touchMoved = true;
-    }, { passive: true });
-
-    track.addEventListener('touchend', function() {
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() {
-            track.classList.remove('carousel-paused');
-        }, 300);
-    }, { passive: true });
-
-    track.addEventListener('touchcancel', function() {
-        clearTimeout(resumeTimer);
-        track.classList.remove('carousel-paused');
-    }, { passive: true });
-
-    var isClickDisabled = false;
-    track.addEventListener('touchstart', function() {
-        isClickDisabled = false;
-    }, { passive: true });
-    track.addEventListener('touchmove', function() {
-        isClickDisabled = true;
-    }, { passive: true });
-
-    track.querySelectorAll('.skill-card-clone').forEach(function(clone) {
-        clone.setAttribute('tabindex', '-1');
-    });
-
-    function recalcSpeed() {
-        var cards = track.querySelectorAll('.skill-card:not(.skill-card-clone)');
-        var totalWidth = 0;
-        var gap = parseFloat(getComputedStyle(track).gap) || 0;
-        cards.forEach(function(card, i) {
-            totalWidth += card.offsetWidth;
-            if (i > 0) totalWidth += gap;
-        });
-        if (totalWidth > 0) {
-            var duration = Math.max(12, totalWidth / 40);
-            track.style.animationDuration = duration + 's';
+    function stopAutoScroll() {
+        if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(recalcSpeed, 100);
-        });
-    } else {
-        setTimeout(recalcSpeed, 100);
-    }
-
-    var resizeTimer = null;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(recalcSpeed, 200);
+    // Touch: pause on touch, resume immediately (0ms) after touchend
+    projectsCarousel.addEventListener('touchstart', function() {
+        isPaused = true;
+        stopAutoScroll();
     }, { passive: true });
 
-    var skillsSection = document.getElementById('technical-skills');
-    if (skillsSection && 'IntersectionObserver' in window) {
-        var skillsObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (!entry.isIntersecting) {
-                    track.classList.add('carousel-paused');
-                } else {
-                    track.classList.remove('carousel-paused');
-                }
-            });
-        }, { threshold: 0.1 });
-        skillsObserver.observe(skillsSection);
+    projectsCarousel.addEventListener('touchend', function() {
+        isPaused = false;
+        startAutoScroll();
+    }, { passive: true });
+
+    projectsCarousel.addEventListener('touchcancel', function() {
+        isPaused = false;
+        startAutoScroll();
+    }, { passive: true });
+
+    // Mouse: pause on enter, resume immediately on leave
+    projectsCarousel.addEventListener('mouseenter', function() {
+        isPaused = true;
+        stopAutoScroll();
+    });
+
+    projectsCarousel.addEventListener('mouseleave', function() {
+        isPaused = false;
+        startAutoScroll();
+    });
+
+    // Resume auto-scroll when returning from another tab
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && isMobile) {
+            startAutoScroll();
+        } else {
+            stopAutoScroll();
+        }
+    });
+
+    function onResize() {
+        var wasMobile = isMobile;
+        isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+        if (isMobile && !wasMobile) {
+            startAutoScroll();
+        } else if (!isMobile && wasMobile) {
+            stopAutoScroll();
+        }
+    }
+
+    window.addEventListener('resize', onResize, { passive: true });
+
+    if (isMobile) {
+        setTimeout(startAutoScroll, 1500);
     }
 })();
 
@@ -595,24 +602,6 @@ sections.forEach(section => {
     section.classList.add('animate-on-scroll');
     sectionObserver.observe(section);
 });
-
-function initSkillBars() {
-    const skillBars = document.querySelectorAll('.skill-progress');
-
-    skillBars.forEach(bar => {
-        const targetWidth = bar.getAttribute('data-width');
-        if (targetWidth) {
-            bar.style.width = targetWidth;
-            bar.classList.add('animate');
-        }
-    });
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSkillBars);
-} else {
-    initSkillBars();
-}
 
 // ========================================
 // TYPING EFFECT FOR TAGLINE (simplified on mobile)
@@ -755,7 +744,7 @@ if (!isMobile) {
     });
 }
 
-const touchElements = document.querySelectorAll('.education-card, .experience-card, .project-card, .strength-card, .stat, .contact-item, .skill-card, .strength-item, .skill-tag, .language-item');
+const touchElements = document.querySelectorAll('.education-card, .experience-card, .project-card, .stat, .contact-item, .skill-card, .strength-item, .skill-tag, .language-item');
 
 touchElements.forEach(el => {
     let touchTimeout = null;

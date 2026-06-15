@@ -1035,72 +1035,6 @@ section {
     color: var(--primary);
 }
 
-.skill-bars {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(0.75rem, 1.5vw, 1.25rem);
-}
-
-.skill-item {
-    color: var(--dark);
-}
-
-.skill-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-xs);
-    gap: var(--space-sm);
-}
-
-.skill-name {
-    font-size: var(--text-sm);
-    word-break: break-word;
-}
-
-.skill-percent {
-    font-size: var(--text-xs);
-    color: var(--primary-light);
-    font-weight: 600;
-    flex-shrink: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.skill-bar {
-    height: clamp(0.5rem, 1vw, 0.625rem);
-    background: rgba(0, 0, 0, 0.08);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.skill-progress {
-    height: 100%;
-    background: var(--gradient-pink);
-    border-radius: 5px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
-    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0;
-}
-
-.skill-progress::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
 .strengths-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1203,10 +1137,50 @@ section {
     overflow-x: hidden;
 }
 
+.projects-carousel {
+    width: 100%;
+    position: relative;
+}
+
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: clamp(1.25rem, 2.5vw, 1.875rem);
+}
+
+/* Mobile: projects carousel (≤768px) */
+@media (max-width: 768px) {
+    .projects-carousel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        padding: clamp(0.5rem, 2vw, 1rem) 0;
+        scrollbar-width: none;
+    }
+    .projects-carousel::-webkit-scrollbar {
+        display: none;
+    }
+    .projects-carousel .projects-grid {
+        display: flex !important;
+        gap: clamp(1rem, 2vw, 1.5rem);
+        width: max-content;
+        grid-template-columns: unset !important;
+    }
+    .projects-carousel .project-card {
+        flex: 0 0 auto;
+        width: clamp(280px, 80vw, 340px);
+        min-width: 280px;
+        scroll-snap-align: center;
+    }
+    .projects-carousel .project-card:first-child {
+        scroll-snap-align: start;
+    }
+    .projects-carousel .project-card:last-child {
+        scroll-snap-align: end;
+    }
 }
 
 .project-card {
@@ -2004,10 +1978,6 @@ a:focus-visible {
         min-width: 260px;
     }
 
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-
     .skills-wrapper {
         grid-template-columns: 1fr;
     }
@@ -2384,9 +2354,7 @@ a:focus-visible {
     }
 
     .skills .section-title,
-    .skills-category h3,
-    .skill-item,
-    .skill-name {
+    .skills-category h3 {
         color: black;
     }
 
@@ -2471,9 +2439,29 @@ html:not(.js-loaded) .skills-carousel .skill-card {
     min-width: unset !important;
 }
 
+/* No-JS: projects carousel falls back to grid on mobile too */
+html:not(.js-loaded) .projects-carousel {
+    overflow-x: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding: 0;
+}
+html:not(.js-loaded) .projects-carousel .projects-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)) !important;
+    gap: clamp(1.25rem, 2.5vw, 1.875rem) !important;
+    width: 100% !important;
+}
+html:not(.js-loaded) .projects-carousel .project-card {
+    flex: unset !important;
+    width: auto !important;
+    min-width: unset !important;
+}
+
 @keyframes ripple {
     to {
         transform: scale(4);
         opacity: 0;
     }
 }
+
