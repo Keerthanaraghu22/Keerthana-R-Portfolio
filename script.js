@@ -6,52 +6,6 @@ let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.
 let isLowEnd = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : isMobile;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-window.addEventListener('resize', () => {
-    const wasMobile = isMobile;
-    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-    isLowEnd = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : isMobile;
-
-    if (wasMobile !== isMobile && typeof particleInterval !== 'undefined') {
-        var pc = document.getElementById('particles');
-        if (isMobile) {
-            if (pc) pc.style.display = 'none';
-            if (particleInterval) {
-                clearInterval(particleInterval);
-                particleInterval = null;
-            }
-        } else if (!prefersReducedMotion) {
-            if (pc) pc.style.display = '';
-            if (!particleInterval) {
-                particleInterval = setInterval(function() {
-                    if (particleCount < maxParticles) {
-                        createParticle();
-                    }
-                }, 5000);
-            }
-        }
-    }
-}, { passive: true });
-
-window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', function(e) {
-    var pc = document.getElementById('particles');
-    if (e.matches) {
-        if (pc) pc.style.display = 'none';
-        if (typeof particleInterval !== 'undefined' && particleInterval) {
-            clearInterval(particleInterval);
-            particleInterval = null;
-        }
-    } else if (!isMobile) {
-        if (pc) pc.style.display = '';
-        if (typeof particleInterval !== 'undefined' && !particleInterval) {
-            particleInterval = setInterval(function() {
-                if (particleCount < maxParticles) {
-                    createParticle();
-                }
-            }, 5000);
-        }
-    }
-});
-
 // ========================================
 // NAVIGATION
 // ========================================
@@ -260,153 +214,135 @@ if (backToTop) {
  * @param {string} config.trackId         - ID of the carousel track element
  * @param {string} config.cardSelector    - CSS selector for original cards within the track
  * @param {string} config.cloneClass      - Class name added to cloned cards
- * @param {string} config.sectionId      - ID of the parent section for IntersectionObserver
- * @param {number} config.minDuration     - Minimum animation duration in seconds
  */
-function initCarousel(config) {
+function initScrollCarousel(config) {
     var track = document.getElementById(config.trackId);
     if (!track) return;
-    if (prefersReducedMotion) return;
+    var container = track.parentElement;
+    if (!container) return;
 
-    var originalCards = Array.from(track.querySelectorAll(config.cardSelector));
-    if (originalCards.length === 0) return;
+    var cards = Array.from(track.querySelectorAll(config.cardSelector));
+    if (cards.length === 0) return;
 
-    // Clone cards for infinite scroll
-    originalCards.forEach(function(card) {
-        var clone = card.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        clone.classList.add(config.cloneClass);
-        track.appendChild(clone);
-    });
+    // Duplicate the card set once for a seamless infinite loop (skip under reduced motion)
+    if (!prefersReducedMotion) {
+        cards.forEach(function(card) {
+            var clone = card.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            clone.classList.add(config.cloneClass);
+            clone.setAttribute('tabindex', '-1');
+            track.appendChild(clone);
 
-    // Mouse hover pause
-    track.addEventListener('mouseenter', function() {
-        track.classList.add('carousel-paused');
-    });
-    track.addEventListener('mouseleave', function() {
-        track.classList.remove('carousel-paused');
-    });
+            var focusable = clone.querySelectorAll('a, button, [tabindex]');
+            focusable.forEach(function(el) {
+                el.setAttribute('tabindex', '-1');
+                el.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, true);
+            });
+        });
+    }
 
-    // Touch pause/resume
-    var touchStartX = 0;
-    var touchStartY = 0;
-    var touchMoved = false;
-    var resumeTimer = null;
+    var isPaused = false;
+    var isDragging = false;
+    var autoScrollEnabled = !prefersReducedMotion;
 
-    track.addEventListener('touchstart', function(e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        touchMoved = false;
-        track.classList.add('carousel-paused');
-        clearTimeout(resumeTimer);
-    }, { passive: true });
+    function loopPoint() {
+        // Half of the full (duplicated) content width aligns the clone set to the start
+        return track.scrollWidth / 2;
+    }
 
-    track.addEventListener('touchmove', function(e) {
-        var dx = Math.abs(e.touches[0].clientX - touchStartX);
-        var dy = Math.abs(e.touches[0].clientY - touchStartY);
-        if (dx > 10 || dy > 10) {
-            touchMoved = true;
+    function step() {
+        if (isPaused || isDragging || !autoScrollEnabled) return;
+        var loop = loopPoint();
+        if (loop <= container.clientWidth) return;
+        var next = container.scrollLeft + config.speed;
+        if (next >= loop) {
+            container.scrollLeft = next - loop;
+        } else {
+            container.scrollLeft = next;
         }
-    }, { passive: true });
+    }
 
-    track.addEventListener('touchend', function() {
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() {
-            track.classList.remove('carousel-paused');
-        }, 300);
-    }, { passive: true });
+    if (autoScrollEnabled) {
+        setInterval(step, 30);
+    }
 
-    track.addEventListener('touchcancel', function() {
-        clearTimeout(resumeTimer);
-        track.classList.remove('carousel-paused');
-    }, { passive: true });
+    // Pause auto-scroll while the pointer is over the carousel
+    container.addEventListener('mouseenter', function() { isPaused = true; });
+    container.addEventListener('mouseleave', function() { isPaused = false; });
 
-    // Click-vs-swipe prevention
-    var isClickDisabled = false;
+    // Pause while touching (native swipe handles scrolling)
+    container.addEventListener('touchstart', function() { isPaused = true; }, { passive: true });
+    container.addEventListener('touchend', function() { isPaused = false; }, { passive: true });
+    container.addEventListener('touchcancel', function() { isPaused = false; }, { passive: true });
 
-    track.addEventListener('touchstart', function() {
-        isClickDisabled = false;
-    }, { passive: true });
+    // Wheel / trackpad -> horizontal scroll ONLY for horizontal intent.
+    // Vertical scroll (up/down) is left for the page.
+    container.addEventListener('wheel', function(e) {
+        var loop = loopPoint();
+        if (loop <= container.clientWidth) return;
+        var horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+        if (!horizontal) return;
+        e.preventDefault();
+        var delta = e.shiftKey ? e.deltaY : e.deltaX;
+        var target = container.scrollLeft + delta;
+        if (target >= loop) {
+            target -= loop;
+        } else if (target < 0) {
+            target += loop;
+        }
+        container.scrollLeft = target;
+    }, { passive: false });
 
-    track.addEventListener('touchmove', function() {
-        isClickDisabled = true;
-    }, { passive: true });
+    // Mouse drag-to-scroll (desktop)
+    var startX = 0;
+    var startScroll = 0;
+    var moved = false;
 
-    track.addEventListener('click', function(e) {
-        if (isClickDisabled) {
+    container.addEventListener('pointerdown', function(e) {
+        if (e.pointerType === 'touch') return;
+        isDragging = true;
+        moved = false;
+        startX = e.clientX;
+        startScroll = container.scrollLeft;
+        try { container.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    container.addEventListener('pointermove', function(e) {
+        if (!isDragging) return;
+        var dx = e.clientX - startX;
+        if (Math.abs(dx) > 5) moved = true;
+        container.scrollLeft = startScroll - dx;
+    });
+
+    function endDrag(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        try { container.releasePointerCapture(e.pointerId); } catch (err) {}
+    }
+
+    container.addEventListener('pointerup', endDrag);
+    container.addEventListener('pointercancel', endDrag);
+
+    // Prevent the card's click after a drag
+    container.addEventListener('click', function(e) {
+        if (moved) {
             e.preventDefault();
             e.stopPropagation();
-            isClickDisabled = false;
-            return;
-        }
-
-        var card = e.target.closest(config.cardSelector);
-        if (!card) return;
-
-        if (track.classList.contains('carousel-paused')) {
-            return;
+            moved = false;
         }
     }, true);
 
-    // Clone accessibility - prevent tab focus and clicks on cloned cards
-    track.querySelectorAll('.' + config.cloneClass).forEach(function(clone) {
-        clone.setAttribute('tabindex', '-1');
-        clone.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }, true);
-
-        var focusable = clone.querySelectorAll('a, button, [tabindex]');
-        focusable.forEach(function(el) {
-            el.setAttribute('tabindex', '-1');
-        });
-    });
-
-    // Dynamic speed calculation based on content width
-    function recalcSpeed() {
-        var cards = track.querySelectorAll(config.cardSelector + ':not(.' + config.cloneClass + ')');
-        var totalWidth = 0;
-        var gap = parseFloat(getComputedStyle(track).gap) || 0;
-        cards.forEach(function(card, i) {
-            totalWidth += card.offsetWidth;
-            if (i > 0) totalWidth += gap;
-        });
-
-        if (totalWidth > 0) {
-            var duration = Math.max(config.minDuration, totalWidth / 40);
-            track.style.animationDuration = duration + 's';
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(recalcSpeed, 100);
-        });
-    } else {
-        setTimeout(recalcSpeed, 100);
-    }
-
-    // Debounced resize recalculation
-    var resizeTimer = null;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(recalcSpeed, 200);
-    }, { passive: true });
-
-    // Pause animation when section is off-screen
-    var section = document.getElementById(config.sectionId);
-    if (section && 'IntersectionObserver' in window) {
-        var carouselObserver = new IntersectionObserver(function(entries) {
+    // Pause when the carousel scrolls out of view
+    if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
-                if (!entry.isIntersecting) {
-                    track.classList.add('carousel-paused');
-                } else {
-                    track.classList.remove('carousel-paused');
-                }
+                isPaused = !entry.isIntersecting;
             });
         }, { threshold: 0.1 });
-
-        carouselObserver.observe(section);
+        observer.observe(container);
     }
 }
 
@@ -414,20 +350,18 @@ function initCarousel(config) {
 // CAROUSEL INITIALIZATION
 // ========================================
 
-initCarousel({
+initScrollCarousel({
     trackId: 'certCarouselTrack',
     cardSelector: '.cert-card',
     cloneClass: 'cert-card-clone',
-    sectionId: 'certifications',
-    minDuration: 15
+    speed: 1.5
 });
 
-initCarousel({
+initScrollCarousel({
     trackId: 'skillsCarouselTrack',
     cardSelector: '.skill-card',
     cloneClass: 'skill-card-clone',
-    sectionId: 'technical-skills',
-    minDuration: 12
+    speed: 1.5
 });
 
 // ========================================
@@ -625,16 +559,14 @@ if (tagline && tagline.dataset.originalText === undefined) {
         let charIndex = 0;
         const typingSpeed = 50;
         const startDelay = 1500;
-        let typingTimeout = null;
-        let removeCursorTimeout = null;
 
         function typeWriter() {
             if (charIndex < text.length) {
                 tagline.textContent += text.charAt(charIndex);
                 charIndex++;
-                typingTimeout = setTimeout(typeWriter, typingSpeed);
+                setTimeout(typeWriter, typingSpeed);
             } else {
-                removeCursorTimeout = setTimeout(() => {
+                setTimeout(() => {
                     if (cursor.parentNode) {
                         cursor.remove();
                     }
@@ -689,24 +621,6 @@ if (!isMobile && !prefersReducedMotion && window.matchMedia('(hover: hover) and 
             }
         });
     }
-}
-
-if (!document.getElementById('ripple-style')) {
-    const rippleStyle = document.createElement('style');
-    rippleStyle.id = 'ripple-style';
-    rippleStyle.textContent = `
-        @keyframes ripple {
-            from {
-                transform: scale(0);
-                opacity: 1;
-            }
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(rippleStyle);
 }
 
 if (!isMobile) {
@@ -865,7 +779,7 @@ const counterObserver = new IntersectionObserver((entries) => {
 
             let current = 0;
             const increment = number / 50;
-            const duration = 1500;
+            const duration = 800;
             const stepTime = duration / 50;
 
             const counter = setInterval(() => {
@@ -913,8 +827,7 @@ window.addEventListener('load', () => {
         var resumeLinks = document.querySelectorAll('a[href="Resume.pdf"]');
         for (var i = 0; i < resumeLinks.length; i++) {
             var link = resumeLinks[i];
-            var separator = link.hasAttribute('download') ? '?' : '?';
-            link.href = 'Resume.pdf' + separator + 'v=' + resumeVersion;
+            link.href = 'Resume.pdf' + '?v=' + resumeVersion;
         }
     })();
 });

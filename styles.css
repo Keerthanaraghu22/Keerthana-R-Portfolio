@@ -50,14 +50,10 @@
     --primary-dark: #db2777;
     --primary-light: #f472b6;
     --secondary: #8b5cf6;
-    --accent: #f59e0b;
     --dark: #1e1e2e;
     --dark-light: #2d2d44;
     --light: #fdf2f8;
     --gray: #334155;
-    --gradient-1: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --gradient-pink: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ff9ff3 100%);
     --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
 
@@ -93,7 +89,7 @@ body {
     font-family: 'Poppins', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     line-height: 1.7;
     color: var(--dark);
-    background: var(--light);
+    background: linear-gradient(135deg, #fdf2f8 0%, #f3f0ff 55%, #eef2ff 100%);
     overflow-x: hidden;
     width: 100%;
     min-height: 100vh;
@@ -351,7 +347,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(253, 242, 248, 0.95) 0%, rgba(252, 231, 243, 0.95) 50%, rgba(251, 207, 232, 0.95) 100%);
+    background: transparent;
     position: relative;
     overflow: hidden;
 }
@@ -500,7 +496,6 @@ section {
     object-fit: cover;
 }
 
-.profile-image img[src="profile.jpg"],
 .profile-image img[src="profile.webp"] {
     background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
 }
@@ -534,11 +529,6 @@ section {
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
-}
-
-@keyframes rotate {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .scroll-indicator {
@@ -650,7 +640,7 @@ section {
    ======================================== */
 .about {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(180deg, #fff 0%, #fdf2f8 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -733,7 +723,7 @@ section {
    ======================================== */
 .education {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -836,48 +826,38 @@ section {
    ======================================== */
 .certifications {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(180deg, #fdf2f8 0%, #fff 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
-}
-
-.cert-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-    gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 /* ========================================
    CERTIFICATIONS CAROUSEL
    ======================================== */
 .cert-carousel {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     width: 100%;
     position: relative;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     padding: clamp(1rem, 2vw, 1.5rem) 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.cert-carousel::-webkit-scrollbar {
+    display: none;
 }
 
 .cert-carousel-track {
     display: flex;
     gap: clamp(1rem, 2vw, 1.5rem);
     width: max-content;
-    animation: cert-scroll 20s linear infinite;
     will-change: transform;
-}
-
-.cert-carousel-track.carousel-paused {
-    animation-play-state: paused;
-}
-
-@keyframes cert-scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
 }
 
 .cert-carousel .cert-card {
@@ -1001,7 +981,7 @@ section {
    ======================================== */
 .skills {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(180deg, #fff 0%, #fdf2f8 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -1132,7 +1112,7 @@ section {
    ======================================== */
 .projects {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(180deg, #fff 0%, #fdf2f8 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -1331,7 +1311,7 @@ section {
    ======================================== */
 .experience {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -1456,36 +1436,41 @@ section {
    ======================================== */
 .technical-skills {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(135deg, #f0f4ff 0%, #e8eaf6 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
 
 .skills-carousel {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     width: 100%;
     min-height: 220px;
     position: relative;
     padding: clamp(1rem, 2vw, 1.5rem) 0;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.skills-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.cert-carousel:active,
+.skills-carousel:active {
+    cursor: grabbing;
 }
 
 .skills-carousel-track {
     display: flex;
     gap: clamp(1rem, 2vw, 1.5rem);
     width: max-content;
-    animation: skills-scroll 12s linear infinite;
     will-change: transform;
-}
-
-.skills-carousel-track.carousel-paused {
-    animation-play-state: paused;
-}
-
-@keyframes skills-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
 }
 
 .skill-card {
@@ -1577,7 +1562,7 @@ section {
 
 .contact {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(180deg, #fdf2f8 0%, #fff 100%);
+    background: transparent;
     width: 100%;
     overflow-x: hidden;
 }
@@ -1688,35 +1673,6 @@ section {
     box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
 }
 
-.social-icons {
-    display: flex;
-    gap: var(--space-md);
-    margin-top: var(--space-xl);
-    animation: fadeInUp 0.8s ease 1s both;
-}
-
-.social-icon {
-    width: clamp(2.5rem, 4vw, 3.125rem);
-    height: clamp(2.5rem, 4vw, 3.125rem);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid var(--primary);
-    border-radius: 50%;
-    color: var(--primary);
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.social-icon:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
-}
-
 .particles {
     position: fixed;
     top: 0;
@@ -1754,7 +1710,7 @@ section {
 
 .footer {
     padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(1.25rem, 2.5vw, 2rem);
-    background: linear-gradient(135deg, #db2777 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #c7d2fe 0%, #f9a8d4 100%);
     text-align: center;
     width: 100%;
     overflow-x: hidden;
@@ -1777,9 +1733,9 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(236, 72, 153, 0.12);
     border-radius: 50%;
-    color: white;
+    color: var(--primary);
     font-size: clamp(1rem, 1.2vw, 1.1rem);
     text-decoration: none;
     transition: all 0.3s ease;
@@ -1787,14 +1743,14 @@ section {
 
 @media (hover: hover) and (pointer: fine) {
     .footer-social a:hover {
-        background: white;
-        color: var(--primary);
+        background: var(--primary);
+        color: white;
         transform: translateY(-3px);
     }
 }
 
 .footer p {
-    color: white;
+    color: var(--dark);
     font-size: var(--text-sm);
     margin-bottom: var(--space-xs);
 }
@@ -1969,10 +1925,6 @@ a:focus-visible {
         min-width: 140px;
     }
 
-    .cert-grid {
-        grid-template-columns: 1fr;
-    }
-
     .cert-carousel .cert-card {
         width: clamp(260px, 80vw, 320px);
         min-width: 260px;
@@ -2094,10 +2046,6 @@ a:focus-visible {
     .education-timeline::before,
     .experience-timeline::before {
         left: var(--timeline-line-offset);
-    }
-
-    .cert-grid {
-        gap: 1rem;
     }
 
     .cert-carousel .cert-card {
@@ -2233,10 +2181,6 @@ a:focus-visible {
         padding: 1rem 2.25rem;
     }
 
-    .cert-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
     .projects-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -2248,11 +2192,6 @@ a:focus-visible {
 @media (min-width: 1920px) {
     .hero-content {
         gap: var(--space-3xl);
-    }
-
-    .cert-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
     }
 
     .cert-carousel .cert-card {
@@ -2281,10 +2220,6 @@ a:focus-visible {
     .education-timeline,
     .experience-timeline {
         max-width: 900px;
-    }
-
-    .cert-grid {
-        grid-template-columns: repeat(4, 1fr);
     }
 
     .cert-carousel .cert-card {
