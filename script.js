@@ -833,6 +833,24 @@ window.addEventListener('load', () => {
 });
 
 // ========================================
+// ASYNC CSS - flip deferred stylesheets to active once loaded
+// (replaces inline onload handlers so CSP can drop 'unsafe-inline')
+// ========================================
+
+(function() {
+    var asyncLinks = document.querySelectorAll('link[data-async-css]');
+    for (var i = 0; i < asyncLinks.length; i++) {
+        (function(link) {
+            if (link.sheet) {
+                link.media = 'all';
+            } else {
+                link.addEventListener('load', function() { link.media = 'all'; });
+            }
+        })(asyncLinks[i]);
+    }
+})();
+
+// ========================================
 // EMAIL PROTECTION - Obfuscated & click-to-reveal
 // ========================================
 
@@ -851,7 +869,7 @@ window.addEventListener('load', () => {
         (function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.open('mailto:' + email, '_blank');
+                window.location.href = 'mailto:' + email;
             });
         })(emailLinks[i]);
     }

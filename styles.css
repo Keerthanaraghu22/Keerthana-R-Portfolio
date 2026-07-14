@@ -1627,7 +1627,7 @@ section {
     font-size: clamp(1rem, 1.5vw, 1.2rem);
 }
 
-.contact-item h4 {
+.contact-item h3 {
     color: var(--dark);
     font-size: clamp(1rem, 1.2vw, 1.1rem);
     font-weight: 600;
@@ -2299,7 +2299,7 @@ a:focus-visible {
     }
 
     .contact .section-title,
-    .contact-item h4,
+    .contact-item h3,
     .contact-item p {
         color: black;
     }
