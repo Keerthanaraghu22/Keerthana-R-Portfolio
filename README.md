@@ -19,6 +19,7 @@ A modern, responsive personal portfolio website for **Keerthana R**, an aspiring
 - **Accessibility First** — ARIA labels, skip-to-content link, keyboard trap in mobile nav, focus management, and `prefers-reduced-motion` support
 - **SEO Optimized** — Open Graph & Twitter Card meta tags, structured data (JSON-LD), canonical URL, sitemap, and robots.txt
 - **Content Security Policy** — Strict CSP header via `<meta>` tag
+- **Privacy First** — No third-party analytics or tracking scripts
 - **Email Obfuscation** — Email address hidden from scrapers, revealed only via JavaScript
 - **Back-to-Top Button** — Appears on scroll for easy navigation
 - **Mobile Hamburger Menu** — With overlay and focus trapping for accessibility
@@ -30,22 +31,27 @@ A modern, responsive personal portfolio website for **Keerthana R**, an aspiring
 
 ```
 Keeru Portfolio 2/
-├── index.html              # Main HTML page
-├── styles.css              # All styles (2,400+ lines)
-├── script.js               # All interactive behaviour (960+ lines)
-├── profile.webp            # Profile photo
-├── preview.webp            # Open Graph / social share preview image
-├── Resume.pdf              # Downloadable resume
+├── index.html              # Main HTML page (site entry point)
 ├── robots.txt              # Search engine crawl directives
 ├── sitemap.xml             # XML sitemap for SEO
-├── README.md               
-└── logos/
-    ├── analytics-vidhya-logo.webp
-    ├── google-logo.webp
-    ├── hackerrank-logo.webp
-    ├── microsoft-logo.webp
-    ├── oneroadmap-logo.webp
-    └── simplilearn-logo.webp
+├── README.md
+└── assets/
+    ├── css/
+    │   └── styles.css              # All styles (2,400+ lines)
+    ├── js/
+    │   └── script.js               # All interactive behaviour (960+ lines)
+    ├── images/
+    │   ├── profile.webp            # Profile photo
+    │   └── preview.webp            # Open Graph / social share preview image
+    ├── logos/
+    │   ├── analytics-vidhya-logo.webp
+    │   ├── google-logo.webp
+    │   ├── hackerrank-logo.webp
+    │   ├── microsoft-logo.webp
+    │   ├── oneroadmap-logo.webp
+    │   └── simplilearn-logo.webp
+    └── docs/
+        └── Resume.pdf              # Downloadable resume
 ```
 
 ---
@@ -55,7 +61,7 @@ Keeru Portfolio 2/
 | Section | Description |
 |---|---|
 | **Home** | Hero section with name, title, tagline, and social links |
-| **About** | Bio, resume download/view, and quick stats (6+ certifications, 1 project, 2027 graduation) |
+| **About** | Bio, resume download/view, and quick stats (6+ certifications, 2 project, 2027 graduation) |
 | **Education** | Timeline of academic history — B.E., PUC, and SSLC |
 | **Certifications** | Auto-scrolling carousel with 6 certifications from Google, Microsoft, HackerRank, Analytics Vidhya, Simplilearn, and OneRoadmap |
 | **Skills & Strengths** | Core strengths, soft skills, and spoken languages |
