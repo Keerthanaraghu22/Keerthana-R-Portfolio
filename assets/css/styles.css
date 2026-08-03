@@ -1135,8 +1135,6 @@ section {
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
-        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
         padding: clamp(0.5rem, 2vw, 1rem) 0;
         scrollbar-width: none;
     }
@@ -1190,7 +1188,8 @@ section {
 
 .project-image {
     height: clamp(140px, 20vw, 200px);
-    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    /* No pink container body - transparent so only the curved screenshot shows */
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1198,15 +1197,22 @@ section {
     overflow: hidden;
 }
 
-.project-icon {
-    font-size: clamp(3rem, 5vw, 4rem);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+.project-screenshot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 1;
+    transition: transform 0.4s ease, filter 0.4s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .project-card:hover .project-icon {
-        opacity: 0;
-        transform: scale(1.1);
+    .project-card:hover .project-screenshot {
+        transform: scale(1.05);
+        filter: blur(2px);
     }
 }
 
@@ -1216,7 +1222,8 @@ section {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(236, 72, 153, 0.8);
+    z-index: 2;
+    background: rgba(15, 18, 26, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1233,14 +1240,9 @@ section {
 @media (hover: none), (pointer: coarse) {
     .project-overlay {
         opacity: 0;
-        background: rgba(236, 72, 153, 0.8);
+        background: rgba(15, 18, 26, 0.45);
         transition: opacity 0.3s ease;
     }
-}
-
-.project-card.touched .project-icon {
-    opacity: 0;
-    transform: scale(1.1);
 }
 
 .project-card.touched .project-overlay {
@@ -1250,14 +1252,19 @@ section {
 .project-link {
     width: 50px;
     height: 50px;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary);
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
+    color: #111827;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    transition: transform 0.3s ease, background 0.2s ease;
+}
+
+.project-card:hover .project-link {
+    transform: scale(1.08);
 }
 
 .project-content {
@@ -1471,6 +1478,50 @@ section {
     gap: clamp(1rem, 2vw, 1.5rem);
     width: max-content;
     will-change: transform;
+}
+
+/* Carousel position dots - small & screen-adapted */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: clamp(0.5rem, 1vw, 0.875rem);
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+.carousel-dot {
+    width: clamp(7px, 1.4vw, 9px);
+    height: clamp(7px, 1.4vw, 9px);
+    border-radius: 50%;
+    border: none;
+    background: #d1d5db;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, width 0.25s ease;
+}
+.carousel-dot:hover {
+    background: var(--primary);
+}
+.carousel-dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+    width: clamp(16px, 2.4vw, 20px);
+    border-radius: 6px;
+}
+
+@media (max-width: 480px) {
+    .carousel-dot {
+        width: 6px;
+        height: 6px;
+        gap: 5px;
+    }
+    .carousel-dots {
+        gap: 5px;
+    }
+    .carousel-dot.active {
+        width: 14px;
+    }
 }
 
 .skill-card {
@@ -2088,10 +2139,6 @@ a:focus-visible {
 
     .project-image {
         height: 140px;
-    }
-
-    .project-icon {
-        font-size: 3rem;
     }
 
     .education-timeline,

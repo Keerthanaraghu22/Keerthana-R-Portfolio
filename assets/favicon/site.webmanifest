@@ -1,0 +1,22 @@
+{
+  "name": "Keerthana R Portfolio",
+  "short_name": "Keeru",
+  "description": "Portfolio of Keerthana R - Data Analyst",
+  "start_url": "/Keerthana-R-Portfolio/",
+  "scope": "/Keerthana-R-Portfolio/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ec4899",
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

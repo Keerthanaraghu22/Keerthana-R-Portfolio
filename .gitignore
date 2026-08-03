@@ -1,0 +1,8 @@
+# Tooling / working folders
+.impeccable/
+_design-preview/
+.vscode/
+
+# OS / editor
+.DS_Store
+Thumbs.db

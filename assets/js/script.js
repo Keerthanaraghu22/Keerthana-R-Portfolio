@@ -214,6 +214,7 @@ if (backToTop) {
  * @param {string} config.trackId         - ID of the carousel track element
  * @param {string} config.cardSelector    - CSS selector for original cards within the track
  * @param {string} config.cloneClass      - Class name added to cloned cards
+ * @param {boolean} config.showDots       - When true, renders clickable position dots
  */
 function initScrollCarousel(config) {
     var track = document.getElementById(config.trackId);
@@ -344,6 +345,83 @@ function initScrollCarousel(config) {
         }, { threshold: 0.1 });
         observer.observe(container);
     }
+
+    // ========================================
+    // POSITION DOTS (optional) - smooth, scroll-synced
+    // ========================================
+    if (config.showDots) {
+        // Use the pre-clone card list so we get exactly one dot per real card
+        var originalCards = cards;
+        var totalDots = originalCards.length;
+
+        // Container for the dots, placed right below the carousel
+        var dotsWrap = document.createElement('div');
+        dotsWrap.className = 'carousel-dots';
+
+        var dots = [];
+        for (var di = 0; di < totalDots; di++) {
+            (function(index) {
+                var dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Go to item ' + (index + 1));
+                dot.addEventListener('click', function() {
+                    if (totalDots <= 1) return;
+                    // Pause continuous autoplay so the jump is clean
+                    isPaused = true;
+                    var original = originalCards[index];
+                    var offset = original.offsetLeft;
+                    container.scrollTo({ left: offset, behavior: 'smooth' });
+                });
+                dots.push(dot);
+                dotsWrap.appendChild(dot);
+            })(di);
+        }
+        container.parentElement.insertBefore(dotsWrap, container.nextSibling);
+
+        // Compute card step from the first original card + gap
+        function cardStep() {
+            if (originalCards.length === 0) return 1;
+            var first = originalCards[0];
+            var gap = parseFloat(getComputedStyle(track).gap) || 0;
+            return (first.offsetWidth || 1) + gap;
+        }
+
+        // Map scrollLeft -> active dot index (respects the clone loop)
+        function syncDots() {
+            if (totalDots <= 1) {
+                return;
+            }
+            var step = cardStep();
+            if (!step) return;
+            var pos = container.scrollLeft;
+            var idx = Math.round(pos / step);
+            // Clamp into [0, totalDots-1]; when reaching the clone set, wrap to start
+            idx = ((idx % totalDots) + totalDots) % totalDots;
+            for (var k = 0; k < dots.length; k++) {
+                dots[k].classList.toggle('active', k === idx);
+            }
+        }
+
+        var dotTicking = false;
+        container.addEventListener('scroll', function() {
+            if (!dotTicking) {
+                requestAnimationFrame(function() {
+                    syncDots();
+                    dotTicking = false;
+                });
+                dotTicking = true;
+            }
+        }, { passive: true });
+
+        var dotResizeTimer = null;
+        window.addEventListener('resize', function() {
+            clearTimeout(dotResizeTimer);
+            dotResizeTimer = setTimeout(syncDots, 120);
+        });
+
+        syncDots();
+    }
 }
 
 // ========================================
@@ -354,14 +432,16 @@ initScrollCarousel({
     trackId: 'certCarouselTrack',
     cardSelector: '.cert-card',
     cloneClass: 'cert-card-clone',
-    speed: 1.5
+    speed: 1.5,
+    showDots: true
 });
 
 initScrollCarousel({
     trackId: 'skillsCarouselTrack',
     cardSelector: '.skill-card',
     cloneClass: 'skill-card-clone',
-    speed: 1.5
+    speed: 1.5,
+    showDots: true
 });
 
 // ========================================
@@ -450,6 +530,39 @@ initScrollCarousel({
     if (isMobile) {
         setTimeout(startAutoScroll, 1500);
     }
+})();
+
+// ========================================
+// PROJECTS AUTO-DETECT - FUTURE-READY (disabled)
+// ========================================
+// When 2-3+ data projects exist, this will render project cards from the
+// GitHub API automatically. It is intentionally disabled until then.
+// To enable later: set ENABLE_AUTO_DETECT = true AND add 'api.github.com'
+// to the CSP connect-src directive in index.html.
+(function() {
+    var ENABLE_AUTO_DETECT = false;
+    if (!ENABLE_AUTO_DETECT) return;
+    // NOTE: the querySelector below targets the projects track. When this is
+    // enabled, new project cards are appended and the layout re-flows.
+    var projectsTrack = document.getElementById('projectsCarouselTrack');
+    if (!projectsTrack) return;
+    var done = false;
+    function build(repos) {
+        // placeholder — filled with fetch logic when enabled
+        console.log('GitHub repos detected:', repos.length);
+    }
+    fetch('https://api.github.com/users/Keerthanaraghu22/repos?sort=updated&per_page=100')
+        .then(function(r) { return r.json(); })
+        .then(function(repos) {
+            if (!Array.isArray(repos)) return;
+            // Drop the auto-generated profile repo + the portfolio repo
+            var filtered = repos.filter(function(r) {
+                return r.name !== 'keerthanaraghu22' &&
+                       r.name !== 'Keerthana-R-Portfolio';
+            });
+            if (filtered.length >= 2) { build(filtered); done = true; }
+        })
+        .catch(function() {});
 })();
 
 // ========================================
@@ -851,36 +964,54 @@ window.addEventListener('load', () => {
 })();
 
 // ========================================
-// EMAIL PROTECTION - Obfuscated & click-to-reveal
+// EMAIL PROTECTION - ROT13 obfuscation, assemble-on-click
 // ========================================
 
 (function() {
-    var encodedEmail = 'cmFnaHVrZWVydGhhbmE3NjJAZ21haWwuY29t';
-    var email;
-    try {
-        email = atob(encodedEmail);
-    } catch (e) {
-        console.error('Email decoding failed:', e);
-        email = '';
+    // ROT13-encoded address. The plaintext address never appears in the HTML;
+    // it is only decoded in memory when the user clicks "Email me" or "Copy".
+    // rot13("raghukeerthana762@gmail.com") === "entuhxrregunan762@tznvy.pbz"
+    var encodedEmail = 'entuhxrregunan762@tznvy.pbz';
+
+    function rot13(str) {
+        return str.replace(/[a-zA-Z]/g, function(ch) {
+            var code = ch.charCodeAt(0);
+            var base = ch <= 'Z' ? 65 : 97;
+            return String.fromCharCode(((code - base + 13) % 26) + base);
+        });
     }
 
+    function assembleEmail() {
+        try {
+            return rot13(encodedEmail);
+        } catch (e) {
+            return '';
+        }
+    }
+
+    // Any element with .email-link opens a mailto: using the assembled address (no plaintext in source)
     var emailLinks = document.querySelectorAll('.email-link');
     for (var i = 0; i < emailLinks.length; i++) {
         (function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
+                var email = assembleEmail();
+                if (!email) return;
                 window.location.href = 'mailto:' + email;
             });
         })(emailLinks[i]);
     }
 
+    // Contact email display: click to assemble + open mailto
     var emailDisplay = document.querySelector('.email-display');
     if (emailDisplay) {
-        emailDisplay.textContent = 'Click to reveal';
+        emailDisplay.textContent = 'Click to reveal email';
         emailDisplay.style.cursor = 'pointer';
         emailDisplay.addEventListener('click', function(e) {
-          e.stopPropagation();
-          window.location.href = 'mailto:' + email;
+            e.stopPropagation();
+            var email = assembleEmail();
+            if (!email) return;
+            window.location.href = 'mailto:' + email;
         });
     }
 })();
