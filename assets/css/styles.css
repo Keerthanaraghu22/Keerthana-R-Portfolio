@@ -1145,13 +1145,13 @@ section {
     .projects-carousel .projects-grid {
         display: flex !important;
         gap: clamp(1rem, 2vw, 1.5rem);
-        width: max-content;
+        width: 100%;
         grid-template-columns: unset !important;
     }
     .projects-carousel .project-card {
-        flex: 0 0 auto;
-        width: clamp(280px, 80vw, 340px);
-        min-width: 280px;
+        flex: 0 0 100%;
+        max-width: 100%;
+        min-width: 0;
         scroll-snap-align: center;
     }
     .projects-carousel .project-card:first-child {
