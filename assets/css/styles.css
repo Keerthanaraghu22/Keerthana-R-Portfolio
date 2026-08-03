@@ -965,6 +965,7 @@ section {
     font-size: var(--text-xs);
     font-weight: 600;
     margin-top: var(--space-sm);
+    text-decoration: none;
     transition: color 0.3s ease;
 }
 

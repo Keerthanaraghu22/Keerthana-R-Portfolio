@@ -301,39 +301,53 @@ function initScrollCarousel(config) {
     var startX = 0;
     var startScroll = 0;
     var moved = false;
+    // Track whether a real swipe/drag (not a plain click) is in progress,
+    // so that links inside the carousel (e.g. the cert "View Credential" button)
+    // always remain clickable on mouse/pointer devices.
+    var isPointerDown = false;
 
     container.addEventListener('pointerdown', function(e) {
         if (e.pointerType === 'touch') return;
         isDragging = true;
+        isPointerDown = true;
         moved = false;
         startX = e.clientX;
         startScroll = container.scrollLeft;
-        try { container.setPointerCapture(e.pointerId); } catch (err) {}
+        // Do NOT capture the pointer here. Capturing swallows the browser's
+        // click delivery to interactive elements (links/buttons) on mouse devices,
+        // which made the cert "View Credential" button register as a drag instead
+        // of a click. Native scrolling still works without capture.
     });
 
     container.addEventListener('pointermove', function(e) {
         if (!isDragging) return;
         var dx = e.clientX - startX;
-        if (Math.abs(dx) > 5) moved = true;
+        // Only register a real drag when the pointer has travelled a clear distance.
+        // A plain click (even with a few px of jitter) is NOT a drag.
+        if (Math.abs(dx) > 10) moved = true;
         container.scrollLeft = startScroll - dx;
     });
 
     function endDrag(e) {
         if (!isDragging) return;
         isDragging = false;
-        try { container.releasePointerCapture(e.pointerId); } catch (err) {}
+        isPointerDown = false;
     }
 
     container.addEventListener('pointerup', endDrag);
     container.addEventListener('pointercancel', endDrag);
 
-    // Prevent the card's click after a drag
+    // Prevent the card's click after a drag, BUT never cancel clicks that land
+    // on a real link/anchor (like the cert "View Credential" button). This keeps
+    // the button fully clickable on mouse/pointer screens while still stopping
+    // accidental navigation after swiping the carousel.
     container.addEventListener('click', function(e) {
-        if (moved) {
+        var onLink = e.target && e.target.closest && e.target.closest('a');
+        if (moved && !onLink) {
             e.preventDefault();
             e.stopPropagation();
-            moved = false;
         }
+        moved = false;
     }, true);
 
     // Pause when the carousel scrolls out of view
@@ -964,54 +978,36 @@ window.addEventListener('load', () => {
 })();
 
 // ========================================
-// EMAIL PROTECTION - ROT13 obfuscation, assemble-on-click
+// EMAIL PROTECTION - Obfuscated & click-to-reveal
 // ========================================
 
 (function() {
-    // ROT13-encoded address. The plaintext address never appears in the HTML;
-    // it is only decoded in memory when the user clicks "Email me" or "Copy".
-    // rot13("raghukeerthana762@gmail.com") === "entuhxrregunan762@tznvy.pbz"
-    var encodedEmail = 'entuhxrregunan762@tznvy.pbz';
-
-    function rot13(str) {
-        return str.replace(/[a-zA-Z]/g, function(ch) {
-            var code = ch.charCodeAt(0);
-            var base = ch <= 'Z' ? 65 : 97;
-            return String.fromCharCode(((code - base + 13) % 26) + base);
-        });
+    var encodedEmail = 'cmFnaHVrZWVydGhhbmE3NjJAZ21haWwuY29t';
+    var email;
+    try {
+        email = atob(encodedEmail);
+    } catch (e) {
+        console.error('Email decoding failed:', e);
+        email = '';
     }
 
-    function assembleEmail() {
-        try {
-            return rot13(encodedEmail);
-        } catch (e) {
-            return '';
-        }
-    }
-
-    // Any element with .email-link opens a mailto: using the assembled address (no plaintext in source)
     var emailLinks = document.querySelectorAll('.email-link');
     for (var i = 0; i < emailLinks.length; i++) {
         (function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                var email = assembleEmail();
-                if (!email) return;
                 window.location.href = 'mailto:' + email;
             });
         })(emailLinks[i]);
     }
 
-    // Contact email display: click to assemble + open mailto
     var emailDisplay = document.querySelector('.email-display');
     if (emailDisplay) {
-        emailDisplay.textContent = 'Click to reveal email';
+        emailDisplay.textContent = 'Click to reveal';
         emailDisplay.style.cursor = 'pointer';
         emailDisplay.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var email = assembleEmail();
-            if (!email) return;
-            window.location.href = 'mailto:' + email;
+          e.stopPropagation();
+          window.location.href = 'mailto:' + email;
         });
     }
 })();

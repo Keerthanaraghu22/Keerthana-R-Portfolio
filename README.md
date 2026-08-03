@@ -20,7 +20,7 @@ A modern, responsive personal portfolio website for **Keerthana R**, an aspiring
 - **SEO Optimized** — Open Graph & Twitter Card meta tags, structured data (JSON-LD), canonical URL, sitemap, and robots.txt
 - **Content Security Policy** — Strict CSP header via `<meta>` tag
 - **Privacy First** — No third-party analytics or tracking scripts
-- **Email Obfuscation** — Email address hidden from scrapers, revealed only via JavaScript
+- **Email Obfuscation** — Email address hidden from scrapers (base64-encoded in source), revealed via JavaScript on click
 - **Back-to-Top Button** — Appears on scroll for easy navigation
 - **Mobile Hamburger Menu** — With overlay and focus trapping for accessibility
 - **No Framework Dependencies** — Pure HTML, CSS, and vanilla JS
@@ -43,6 +43,16 @@ Keeru Portfolio 2/
     ├── images/
     │   ├── profile.webp            # Profile photo
     │   └── preview.webp            # Open Graph / social share preview image
+    ├── projects/
+    │   └── project-chocolate-dashboard.webp  # Project screenshot
+    ├── favicon/
+    │   ├── favicon.ico             # Favicon (legacy/fallback)
+    │   ├── favicon-16x16.png       # 16px favicon
+    │   ├── favicon-32x32.png       # 32px favicon
+    │   ├── apple-touch-icon.png    # 180px iOS home-screen icon
+    │   ├── android-chrome-192x192.png  # 192px Android icon
+    │   ├── android-chrome-512x512.png  # 512px Android/PWA icon
+    │   └── site.webmanifest        # Web App Manifest (Android/PWA)
     ├── logos/
     │   ├── analytics-vidhya-logo.webp
     │   ├── google-logo.webp
@@ -61,9 +71,9 @@ Keeru Portfolio 2/
 | Section | Description |
 |---|---|
 | **Home** | Hero section with name, title, tagline, and social links |
-| **About** | Bio, resume download/view, and quick stats (6+ certifications, 2 project, 2027 graduation) |
+| **About** | Bio, resume download/view, and quick stats (8 certifications, 1 project, 2027 graduation) |
 | **Education** | Timeline of academic history — B.E., PUC, and SSLC |
-| **Certifications** | Auto-scrolling carousel with 6 certifications from Google, Microsoft, HackerRank, Analytics Vidhya, Simplilearn, and OneRoadmap |
+| **Certifications** | Auto-scrolling carousel with 8 certifications from Google, Microsoft, HackerRank, Analytics Vidhya, Simplilearn, OneRoadmap, and IBM SkillsBuild |
 | **Skills & Strengths** | Core strengths, soft skills, and spoken languages |
 | **Technical Skills** | Carousel showcasing Python, SQL, Power BI, Excel, Data Visualization, Data Cleaning, and Data Analysis |
 | **Projects** | Interactive Chocolate Sales Dashboard (Power BI) |
@@ -151,6 +161,8 @@ A modern web browser — no build tools or package managers required.
 | Power BI for Beginners | Microsoft · Simplilearn SkillUp | 2026 |
 | Data Analyst Skill Certification | OneRoadmap | 2026 |
 | SQL (Advanced) Certification | HackerRank | 2026 |
+| AI Fundamentals: Foundations for Understanding AI | IBM SkillsBuild (Credly) | 2026 |
+| Lifelong Professional Skills | IBM SkillsBuild (Credly) | 2026 |
 
 ---
 
