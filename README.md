@@ -71,9 +71,9 @@ Keeru Portfolio 2/
 | Section | Description |
 |---|---|
 | **Home** | Hero section with name, title, tagline, and social links |
-| **About** | Bio, resume download/view, and quick stats (8 certifications, 1 project, 2027 graduation) |
+| **About** | Bio, resume download/view, and quick stats (9 certifications, 1 project, 2027 graduation) |
 | **Education** | Timeline of academic history — B.E., PUC, and SSLC |
-| **Certifications** | Auto-scrolling carousel with 8 certifications from Google, Microsoft, HackerRank, Analytics Vidhya, Simplilearn, OneRoadmap, and IBM SkillsBuild |
+| **Certifications** | Auto-scrolling carousel with 9 certifications from Google, Microsoft, HackerRank, Analytics Vidhya, Simplilearn, OneRoadmap, IBM SkillsBuild, and Deloitte (Forage) |
 | **Skills & Strengths** | Core strengths, soft skills, and spoken languages |
 | **Technical Skills** | Carousel showcasing Python, SQL, Power BI, Excel, Data Visualization, Data Cleaning, and Data Analysis |
 | **Projects** | Interactive Chocolate Sales Dashboard (Power BI) |
@@ -163,6 +163,7 @@ A modern web browser — no build tools or package managers required.
 | SQL (Advanced) Certification | HackerRank | 2026 |
 | AI Fundamentals: Foundations for Understanding AI | IBM SkillsBuild (Credly) | 2026 |
 | Lifelong Professional Skills | IBM SkillsBuild (Credly) | 2026 |
+| Data Analytics Job Simulation | Deloitte (Forage) | 2025 |
 
 ---
 

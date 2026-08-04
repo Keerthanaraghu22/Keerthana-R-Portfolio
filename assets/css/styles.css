@@ -930,6 +930,10 @@ section {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.cert-logo-white-bg {
+    mix-blend-mode: multiply;
+}
+
 .cert-card:hover .cert-logo {
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
