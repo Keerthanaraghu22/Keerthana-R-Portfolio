@@ -6,7 +6,3 @@ _design-preview/
 # OS / editor
 .DS_Store
 Thumbs.db
-
-# Temporary
-*.tmp
-*.bak
