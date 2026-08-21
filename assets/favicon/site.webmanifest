@@ -5,8 +5,8 @@
   "start_url": "/Keerthana-R-Portfolio/",
   "scope": "/Keerthana-R-Portfolio/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ec4899",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
   "icons": [
     {
       "src": "android-chrome-192x192.png",
