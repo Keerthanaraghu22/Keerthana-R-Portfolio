@@ -184,5 +184,5 @@ A modern web browser — no build tools or package managers required.
 
 > **Developed and maintained by [Abhishek Kumar T](https://www.linkedin.com/in/abhisheksharma611/)**
 >
-- 🔗 [LinkedIn](https://www.linkedin.com/in/abhisheksharma611/) 
-- 🔗 [GitHub](https://github.com/abhisheksharma611)
+> - 🔗 **LinkedIn**: [Abhishek Kumar T](https://www.linkedin.com/in/abhisheksharma611/)
+> - 🔗 **GitHub**: [Abhishek Kumar T](https://github.com/abhisheksharma611)
